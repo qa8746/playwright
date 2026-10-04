@@ -6,3 +6,7 @@ Feature: Playwright homepage
   Scenario: View the Playwright homepage
     When I open the Playwright homepage
     Then the page title should contain "Playwright"
+
+Scenario: View the Playwright homepage with a different title
+    When I open the Playwright homepage
+    Then the page title should contain "Playwright"
