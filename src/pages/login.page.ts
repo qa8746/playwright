@@ -1,6 +1,6 @@
 import type { Page } from 'playwright';
 
-export class HomePage {
+export class login {
   constructor(private readonly page: Page) {}
 
   async open(baseUrl: string): Promise<void> {
@@ -9,10 +9,5 @@ export class HomePage {
 
   async title(): Promise<string> {
     return this.page.title();
-  }
-
-
-  async clickLoginButton(): Promise<void> {
-    await this.page.click('text=Login');
   }
 }
