@@ -11,7 +11,7 @@ pr:
       - master
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: windows-latest
 
 steps:
   - checkout: self
@@ -27,7 +27,7 @@ steps:
   - script: npx playwright install --with-deps chromium
     displayName: Install Playwright Chromium
 
-  - script: npm test
+  - script: npm test:headed
     displayName: Run Cucumber tests
 
   - task: PublishPipelineArtifact@1
