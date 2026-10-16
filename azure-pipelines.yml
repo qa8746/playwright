@@ -27,7 +27,7 @@ steps:
   - script: npx playwright install --with-deps chromium
     displayName: Install Playwright Chromium
 
-  - script: npm test:headed
+  - script: call npm test:headed
     displayName: Run Cucumber tests
 
   - task: PublishPipelineArtifact@1
