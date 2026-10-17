@@ -10,5 +10,6 @@ When('I open the Playwright homepage', async function (this: CustomWorld) {
 
 Then('the page title should contain {string}', async function (this: CustomWorld, expected: string) {
   const title = await this.homePage!.title();
+  console.log(`Page title: "${title}"`);
   assert.ok(title.includes(expected), `Expected page title "${title}" to contain "${expected}"`);
 });

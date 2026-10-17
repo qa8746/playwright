@@ -1,8 +1,12 @@
-trigger:
-  branches:
-    include:
-      - main
-      - master
+trigger: none
+
+schedules:
+  - cron: '0 0 * * *'
+    displayName: Daily midnight run
+    branches:
+      include:
+        - master
+    always: true
 
 pr:
   branches:
