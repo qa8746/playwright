@@ -30,14 +30,21 @@ The browser is launched in the Cucumber hooks; each scenario gets an isolated co
 
 ## Azure DevOps pipeline
 
-The root-level `azure-pipelines.yml` runs the headless Cucumber suite on Ubuntu when changes are pushed or pull requests target `main` or `master`. It installs Node.js 20, npm dependencies, and Chromium, then publishes the generated HTML report as the `cucumber-report` pipeline artifact, including when the tests fail.
+The root-level `azure-pipelines.yml` runs daily at midnight UTC on `master`. Pushes do not trigger a run. Pull requests targeting `main` or `master` still trigger the pipeline. It installs Node.js 20, npm dependencies, and Chromium, then publishes the generated HTML report as the `cucumber-report` pipeline artifact and emails it to `renukaprasadml1999@gmail.com`, including when the tests fail.
+
+To enable report emails, configure these pipeline variables in Azure DevOps (**Pipelines > Edit > Variables**):
+
+- `SENDGRID_API_KEY` — a SendGrid API key with Mail Send permission; mark it secret.
+- `SENDGRID_FROM_EMAIL` — a sender address verified in SendGrid.
+
+The email is sent through SendGrid's Mail Send API, and the HTML report is attached to each run. If the variables are missing or invalid, the email step will fail; report publishing still runs independently.
 
 An Azure DevOps account is not required to create or keep this YAML file, but it is required to run the pipeline in Azure DevOps. To set it up:
 
 1. Create/sign in with a Microsoft account, then create an Azure DevOps organization at [dev.azure.com](https://dev.azure.com/) and a project.
 2. Put this project in a repository Azure DevOps can access. You can push it to Azure Repos or connect a GitHub repository during pipeline creation.
 3. In the project, open **Pipelines > New pipeline**, select the repository, choose **Existing Azure Pipelines YAML file**, and select `/azure-pipelines.yml`.
-4. Save and run the pipeline. To trigger it from another branch, add that branch under both `trigger.branches.include` and `pr.branches.include` in the YAML.
+4. Save and run the pipeline. To schedule another branch, add it under `schedules.branches.include`; push triggers are disabled with `trigger: none`.
 
 Until you have an Azure DevOps organization and a connected repository, the pipeline cannot be created or executed in ADO; the YAML is ready to use once those are available.
 

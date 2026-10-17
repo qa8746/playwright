@@ -41,3 +41,41 @@ steps:
       targetPath: reports
       artifact: cucumber-report
       publishLocation: pipeline
+
+  - pwsh: |
+      $reportPath = Join-Path $env:BUILD_SOURCESDIRECTORY 'reports/cucumber-report.html'
+      if (-not (Test-Path $reportPath)) {
+        throw "Cucumber HTML report was not generated: $reportPath"
+      }
+
+      $reportBytes = [System.IO.File]::ReadAllBytes($reportPath)
+      $reportBase64 = [System.Convert]::ToBase64String($reportBytes)
+      $result = if ($env:AGENT_JOBSTATUS -eq 'Succeeded') { 'Succeeded' } else { 'Failed' }
+      $payload = @{
+        personalizations = @(@{
+          to = @(@{ email = 'renukaprasadml1999@gmail.com' })
+          subject = "Playwright Cucumber report - $env:BUILD_BUILDNUMBER ($result)"
+        })
+        from = @{ email = $env:SENDGRID_FROM_EMAIL }
+        content = @(@{
+          type = 'text/plain'
+          value = "The Playwright Cucumber pipeline completed with status: $result. The HTML report is attached."
+        })
+        attachments = @(@{
+          content = $reportBase64
+          type = 'text/html'
+          filename = 'cucumber-report.html'
+          disposition = 'attachment'
+        })
+      } | ConvertTo-Json -Depth 10
+
+      Invoke-RestMethod -Method Post `
+        -Uri 'https://api.sendgrid.com/v3/mail/send' `
+        -Headers @{ Authorization = "Bearer $env:SENDGRID_API_KEY" } `
+        -ContentType 'application/json' `
+        -Body $payload
+    displayName: Email Cucumber report
+    condition: always()
+    env:
+      SENDGRID_API_KEY: $(SENDGRID_API_KEY)
+      SENDGRID_FROM_EMAIL: $(SENDGRID_FROM_EMAIL)
