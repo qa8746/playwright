@@ -13,4 +13,4 @@ Scenario: View the Playwright homepage with a different title
 
  Scenario: second View the Playwright homepage with a different title
     When I open the Playwright homepage
-    Then the page title should contain "Playwright"   
+    Then the page title should contain "Playwright fail"
